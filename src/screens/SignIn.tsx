@@ -2,6 +2,7 @@ import { VStack,Image, Text, Center, Heading } from "native-base";
 import BackGroundImg from '@assets/background.png';
 import LogoSVG from '@assets/logo.svg';
 import { Input } from "@components/Input";
+import { Button } from "@components/Button";
 
 
 // VS STACK COLOCA UMA COISA EM CIMA DA OUTRA
@@ -32,7 +33,9 @@ export function SignIn(){
             secureTextEntry
             
             />
+            <Button title="Acessar"/>
             </Center>
+            <Button title="Criar conta" variant={"outline"}/>
             
         </VStack>
 
