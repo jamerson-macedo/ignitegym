@@ -3,20 +3,29 @@ import BackGroundImg from "@assets/background.png";
 import LogoSVG from "@assets/logo.svg";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
+import { useNavigation } from "@react-navigation/native";
+
 
 // VS STACK COLOCA UMA COISA EM CIMA DA OUTRA
 // contain ajusta melhor
 // absolute deixa completo pegando tudo
 // margin vertical de 24 em cima e em baixo
 export function SignUp() {
+
+  const navigation=useNavigation();
+
+  function handleGoBack(){
+    navigation.goBack();
+  }
   return (
 
     <ScrollView contentContainerStyle={{flexGrow:1}} showsVerticalScrollIndicator={false}>
 
     
-    <VStack flex={1} bg={"gray.700"} px={8}>
+    <VStack flex={1}  px={8}>
       <Image
         source={BackGroundImg}
+        defaultSource={BackGroundImg} 
         alt="Pessoas treinando"
         resizeMode="contain"
         position={"absolute"}
@@ -49,7 +58,7 @@ export function SignUp() {
         <Button title="Criar e Acessar" />
       </Center >
 
-        <Button  mt={24}title="Voltar para Login" variant={"outline"} />
+        <Button  mt={24}title="Voltar para Login" variant={"outline"} onPress={handleGoBack} />
     
     </VStack>
     </ScrollView>
