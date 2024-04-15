@@ -22,6 +22,7 @@ export function History() {
             vamos fazer exercicios hoje?
         </Text>
       )}
+      showsVerticalScrollIndicator={false}
       keyExtractor={item=>item}
       renderItem={({item})=>(<HistoryCard />)}
       renderSectionHeader={({section})=>(

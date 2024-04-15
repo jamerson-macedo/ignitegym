@@ -16,7 +16,7 @@ export function HomeHeader() {
           Olá
         </Text>
         <Heading color={"gray.100"} fontSize={"md"}>
-          Jamerson
+          Jamerson Macedo
         </Heading>
       </VStack>
       <TouchableOpacity>
