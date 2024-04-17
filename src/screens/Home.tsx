@@ -1,6 +1,8 @@
 import { ExerciseCard } from "@components/ExerciseCard";
 import { Group } from "@components/Group";
 import { HomeHeader } from "@components/HomeHeader";
+import { useNavigation } from "@react-navigation/native";
+import { AppNavigationProps } from "@routes/app.routes";
 import { VStack, FlatList, HStack, Heading, Text } from "native-base";
 import { useState } from "react";
 
@@ -18,6 +20,11 @@ export function Home() {
     "Remada unilateral",
     "Levantamento terra",
   ]);
+  
+  const navigation=useNavigation<AppNavigationProps>();
+  function handleOpenExerciseDetails(){
+    navigation.navigate("Exercise");
+  }
 
   return (
     <VStack flex={1}>
@@ -48,11 +55,12 @@ export function Home() {
           </Text>
         </HStack>
         <FlatList
+
         _contentContainerStyle={{paddingBottom:20}}// espaco pos final
         showsVerticalScrollIndicator={false}
           data={exercises}
           keyExtractor={(item) => item}
-          renderItem={({ item }) => (<ExerciseCard/>)}
+          renderItem={({ item }) => (<ExerciseCard onPress={handleOpenExerciseDetails}/>)}
         >
 
         </FlatList>
