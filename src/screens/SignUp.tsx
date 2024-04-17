@@ -11,7 +11,8 @@ import { useForm, Controller } from "react-hook-form";
 // absolute deixa completo pegando tudo
 // margin vertical de 24 em cima e em baixo
 export function SignUp() {
-  const { control } = useForm();
+
+  const { control,handleSubmit } = useForm();
   
 
   const navigation = useNavigation();
@@ -19,8 +20,10 @@ export function SignUp() {
   function handleGoBack() {
     navigation.goBack();
   }
-  function handleSingUp() {
-    console.log(name);
+  function handleSingUp(data: any) {
+    console.log(data)
+
+    
   }
   return (
     <ScrollView
@@ -94,11 +97,13 @@ export function SignUp() {
                 secureTextEntry
                 onChangeText={onChange}
                 value={value}
+                onSubmitEditing={handleSubmit(handleSingUp)}
+                returnKeyType="send" 
               />
             )}
           />
 
-          <Button title="Criar e Acessar" onPress={handleSingUp} />
+          <Button title="Criar e Acessar" onPress={handleSubmit(handleSingUp)} />
         </Center>
 
         <Button
