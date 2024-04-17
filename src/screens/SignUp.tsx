@@ -4,15 +4,23 @@ import LogoSVG from "@assets/logo.svg";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form"; // serve para pegar todos os dados dos inputs
 
+
+type FormDataProps={
+  name:string;
+  email:string;
+  password:string;
+  password_confirm:string;
+
+}
 // VS STACK COLOCA UMA COISA EM CIMA DA OUTRA
 // contain ajusta melhor
 // absolute deixa completo pegando tudo
 // margin vertical de 24 em cima e em baixo
 export function SignUp() {
 
-  const { control,handleSubmit } = useForm();
+  const { control,handleSubmit } = useForm<FormDataProps>(); // controla os dados e submit manda os dados
   
 
   const navigation = useNavigation();
@@ -20,10 +28,9 @@ export function SignUp() {
   function handleGoBack() {
     navigation.goBack();
   }
-  function handleSingUp(data: any) {
-    console.log(data)
+  function handleSingUp(data: FormDataProps) {
+    console.log(data.email)
 
-    
   }
   return (
     <ScrollView
@@ -103,7 +110,7 @@ export function SignUp() {
             )}
           />
 
-          <Button title="Criar e Acessar" onPress={handleSubmit(handleSingUp)} />
+          <Button title="Criar e Acessar" onPress={handleSubmit(handleSingUp)} /> 
         </Center>
 
         <Button
