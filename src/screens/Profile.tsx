@@ -12,14 +12,48 @@ import {
 } from "native-base";
 import { useState } from "react";
 import { TouchableOpacity } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from 'expo-file-system';
+
 
 export function Profile() {
   const PHOTO_SIZE = 33;
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
+  const [userPhoto, setUserPhoto] = useState(
+    "https:github.com/jamerson-macedo.png"
+  );
+  async function handleUserPhotoSelect() {
+    setPhotoIsLoading(true);
+    try {
+      const photoSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 4],
+        quality: 1,
+      });
+      if(photoSelected.canceled){
+        return;
+      }
+    
+      
+      if( photoSelected.assets[0].uri){
+        setUserPhoto(photoSelected.assets[0].uri)
+      
+      }
+     
+     
+    } catch (error) {
+      console.log(error);
+    }finally{
+      setPhotoIsLoading(false)
+    }
+
+    
+  }
   return (
     <VStack flex={1}>
       <ScreenHeader title="Perfil" />
-      <ScrollView contentContainerStyle={{paddingBottom:36}}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
         <Center px={10} mt={6}>
           {photoIsLoading ? (
             <Skeleton
@@ -33,10 +67,10 @@ export function Profile() {
             <UserPhoto
               size={PHOTO_SIZE}
               alt="foto do usuario"
-              source={{ uri: "https:github.com/jamerson-macedo.png" }}
+              source={{ uri: userPhoto }}
             />
           )}
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleUserPhotoSelect}>
             <Text
               color={"green.500"}
               fontWeight={"bold"}
