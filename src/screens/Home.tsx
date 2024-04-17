@@ -20,7 +20,7 @@ export function Home() {
     "Remada unilateral",
     "Levantamento terra",
   ]);
-  
+
   const navigation=useNavigation<AppNavigationProps>();
   function handleOpenExerciseDetails(){
     navigation.navigate("Exercise");
@@ -35,6 +35,7 @@ export function Home() {
         _contentContainerStyle={{ px: 8 }}
         my={10}
         maxHeight={10}
+        minHeight={10}
         data={groups}
         keyExtractor={(item) => item}
         renderItem={({ item }) => (
