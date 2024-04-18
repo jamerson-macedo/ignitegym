@@ -20,7 +20,7 @@ type FormDataProps={
 // margin vertical de 24 em cima e em baixo
 export function SignUp() {
 
-  const { control,handleSubmit } = useForm<FormDataProps>(); // controla os dados e submit manda os dados
+  const { control,handleSubmit,formState:{errors} } = useForm<FormDataProps>(); // controla os dados e submit manda os dados
   
 
   const navigation = useNavigation();
@@ -63,15 +63,26 @@ export function SignUp() {
 
           <Controller
             name="name"
+            rules={{
+              required:"insira um nome"
+      
+            }}
             render={({ field: { onChange, value } }) => (
-              <Input placeholder="Nome" onChangeText={onChange} value={value} />
+              <Input placeholder="Nome" onChangeText={onChange} value={value} errorMessage={errors.name?.message} />
             )}
             control={control}
           />
+          
 
           <Controller
             name="email"
             control={control}
+            rules={{required:"Informe o E-mail",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "Insira um E-mail válido"
+              }
+            }}
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="E-mail"
@@ -79,9 +90,11 @@ export function SignUp() {
                 autoCapitalize="none"
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.email?.message}
               />
             )}
           />
+           
           <Controller
             name="password"
             control={control}
