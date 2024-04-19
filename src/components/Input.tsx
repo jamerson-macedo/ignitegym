@@ -33,7 +33,7 @@ export function Input({ isInvalid, errorMessage = null, ...rest }: Props) {
         placeholderTextColor={"gray.300"}
         {...rest}
       />
-      <FormControl.ErrorMessage>{errorMessage}</FormControl.ErrorMessage>
+      <FormControl.ErrorMessage _text={{color:"red.500"}}>{errorMessage}</FormControl.ErrorMessage>
     </FormControl>
   );
 }

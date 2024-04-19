@@ -5,7 +5,8 @@ import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
 import { useForm, Controller } from "react-hook-form"; // serve para pegar todos os dados dos inputs
-
+import {yupResolver} from "@hookform/resolvers/yup"
+import * as yup from "yup"
 
 type FormDataProps={
   name:string;
@@ -14,13 +15,23 @@ type FormDataProps={
   password_confirm:string;
 
 }
+// esquema para validar
+const singUpSchema=yup.object({
+
+  name:yup.string().required("Informe o nome.").trim(),
+  email:yup.string().required("Informe o E-mail").email("Email invalido.").trim(),
+  password:yup.string().required("Informe a senha").min(6,"A senha deve ter pelo menos 6  digitos.").trim(),	
+  password_confirm:yup.string().required("Confirme a senha").oneOf([yup.ref('password')],"A confirmaçào da senha não confere").trim()
+})
 // VS STACK COLOCA UMA COISA EM CIMA DA OUTRA
 // contain ajusta melhor
 // absolute deixa completo pegando tudo
 // margin vertical de 24 em cima e em baixo
 export function SignUp() {
 
-  const { control,handleSubmit,formState:{errors} } = useForm<FormDataProps>(); // controla os dados e submit manda os dados
+  const { control,handleSubmit,formState:{errors} } = useForm<FormDataProps>({
+    resolver:yupResolver(singUpSchema)
+  }); // controla os dados e submit manda os dados
   
 
   const navigation = useNavigation();
@@ -29,7 +40,7 @@ export function SignUp() {
     navigation.goBack();
   }
   function handleSingUp(data: FormDataProps) {
-    console.log(data.email)
+    console.log(data.email, data.name)
 
   }
   return (
@@ -63,10 +74,6 @@ export function SignUp() {
 
           <Controller
             name="name"
-            rules={{
-              required:"insira um nome"
-      
-            }}
             render={({ field: { onChange, value } }) => (
               <Input placeholder="Nome" onChangeText={onChange} value={value} errorMessage={errors.name?.message} />
             )}
@@ -77,12 +84,7 @@ export function SignUp() {
           <Controller
             name="email"
             control={control}
-            rules={{required:"Informe o E-mail",
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "Insira um E-mail válido"
-              }
-            }}
+          
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="E-mail"
@@ -104,6 +106,7 @@ export function SignUp() {
                 secureTextEntry
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.password?.message}
               />
             )}
           />
@@ -119,6 +122,8 @@ export function SignUp() {
                 value={value}
                 onSubmitEditing={handleSubmit(handleSingUp)}
                 returnKeyType="send" 
+                errorMessage={errors.password_confirm?.message}
+
               />
             )}
           />
@@ -127,7 +132,7 @@ export function SignUp() {
         </Center>
 
         <Button
-          mt={24}
+          mt={12}
           title="Voltar para Login"
           variant={"outline"}
           onPress={handleGoBack}
