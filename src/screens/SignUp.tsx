@@ -7,7 +7,9 @@ import { useNavigation } from "@react-navigation/native";
 import { useForm, Controller } from "react-hook-form"; // serve para pegar todos os dados dos inputs
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-
+import { api } from "@services/api";
+import axios from "axios";
+import { Alert } from "react-native";
 type FormDataProps = {
   name: string;
   email: string;
@@ -51,9 +53,24 @@ export function SignUp() {
   function handleGoBack() {
     navigation.goBack();
   }
-  function handleSingUp({ name, email, password }: FormDataProps) {
+  async function handleSingUp({ name, email, password }: FormDataProps) {
+    	try {
+        const response=await api.post('/users',{name,email,password});
+        console.log(response.data);
+      } catch (error) {
+        if(axios.isAxiosError(error)){
+          Alert.alert(error.response?.data.message)
+        
+      }
+    }
+  }
+
+
+   
+
     //1 parametro é onde esta o backend
     // como estou usando o endereco do pc tem que ser assim
+    /*
     fetch("http://192.168.18.4:3333/users", {
       method: 'POST',
       headers: {
@@ -63,7 +80,10 @@ export function SignUp() {
       body:JSON.stringify({name, email, password})
     }).then(response =>response.json())
       .then(data=>console.log(data));
-  }
+      */
+     
+
+ 
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
