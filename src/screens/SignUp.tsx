@@ -5,43 +5,64 @@ import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
 import { useForm, Controller } from "react-hook-form"; // serve para pegar todos os dados dos inputs
-import {yupResolver} from "@hookform/resolvers/yup"
-import * as yup from "yup"
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
-type FormDataProps={
-  name:string;
-  email:string;
-  password:string;
-  password_confirm:string;
-
-}
+type FormDataProps = {
+  name: string;
+  email: string;
+  password: string;
+  password_confirm: string;
+};
 // esquema para validar
-const singUpSchema=yup.object({
-
-  name:yup.string().required("Informe o nome.").trim(),
-  email:yup.string().required("Informe o E-mail").email("Email invalido.").trim(),
-  password:yup.string().required("Informe a senha").min(6,"A senha deve ter pelo menos 6  digitos.").trim(),	
-  password_confirm:yup.string().required("Confirme a senha").oneOf([yup.ref('password')],"A confirmaçào da senha não confere").trim()
-})
+const singUpSchema = yup.object({
+  name: yup.string().required("Informe o nome.").trim(),
+  email: yup
+    .string()
+    .required("Informe o E-mail")
+    .email("Email invalido.")
+    .trim(),
+  password: yup
+    .string()
+    .required("Informe a senha")
+    .min(6, "A senha deve ter pelo menos 6  digitos.")
+    .trim(),
+  password_confirm: yup
+    .string()
+    .required("Confirme a senha")
+    .oneOf([yup.ref("password")], "A confirmaçào da senha não confere")
+    .trim(),
+});
 // VS STACK COLOCA UMA COISA EM CIMA DA OUTRA
 // contain ajusta melhor
 // absolute deixa completo pegando tudo
 // margin vertical de 24 em cima e em baixo
 export function SignUp() {
-
-  const { control,handleSubmit,formState:{errors} } = useForm<FormDataProps>({
-    resolver:yupResolver(singUpSchema)
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({
+    resolver: yupResolver(singUpSchema),
   }); // controla os dados e submit manda os dados
-  
 
   const navigation = useNavigation();
 
   function handleGoBack() {
     navigation.goBack();
   }
-  function handleSingUp(data: FormDataProps) {
-    console.log(data.email, data.name)
-
+  function handleSingUp({ name, email, password }: FormDataProps) {
+    //1 parametro é onde esta o backend
+    // como estou usando o endereco do pc tem que ser assim
+    fetch("http://192.168.18.4:3333/users", {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body:JSON.stringify({name, email, password})
+    }).then(response =>response.json())
+      .then(data=>console.log(data));
   }
   return (
     <ScrollView
@@ -75,16 +96,19 @@ export function SignUp() {
           <Controller
             name="name"
             render={({ field: { onChange, value } }) => (
-              <Input placeholder="Nome" onChangeText={onChange} value={value} errorMessage={errors.name?.message} />
+              <Input
+                placeholder="Nome"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.name?.message}
+              />
             )}
             control={control}
           />
-          
 
           <Controller
             name="email"
             control={control}
-          
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="E-mail"
@@ -96,7 +120,7 @@ export function SignUp() {
               />
             )}
           />
-           
+
           <Controller
             name="password"
             control={control}
@@ -121,14 +145,16 @@ export function SignUp() {
                 onChangeText={onChange}
                 value={value}
                 onSubmitEditing={handleSubmit(handleSingUp)}
-                returnKeyType="send" 
+                returnKeyType="send"
                 errorMessage={errors.password_confirm?.message}
-
               />
             )}
           />
 
-          <Button title="Criar e Acessar" onPress={handleSubmit(handleSingUp)} /> 
+          <Button
+            title="Criar e Acessar"
+            onPress={handleSubmit(handleSingUp)}
+          />
         </Center>
 
         <Button
