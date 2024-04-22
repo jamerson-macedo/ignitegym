@@ -1,4 +1,4 @@
-import { VStack, Image, Text, Center, Heading, ScrollView } from "native-base";
+import { VStack, Image, Text, Center, Heading, ScrollView, useToast } from "native-base";
 import BackGroundImg from "@assets/background.png";
 import LogoSVG from "@assets/logo.svg";
 import { Input } from "@components/Input";
@@ -9,6 +9,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useAuth } from "@hooks/useAuth";
 import { useForm, Controller } from "react-hook-form"; // serve para pegar todos os dados dos inputs
+import { AppError } from "@utils/AppError";
+import { useState } from "react";
 // formato dos inputs
 type FormDataProps = {
   email: string;
@@ -32,6 +34,8 @@ const singInSchema = yup.object({
 // absolute deixa completo pegando tudo
 // margin vertical de 24 em cima e em baixo
 export function SignIn() {
+  const [isLoading,setIsLoading]=useState(false)
+  const toast=useToast();
   const { signIn } = useAuth();
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const {
@@ -46,8 +50,26 @@ export function SignIn() {
     navigation.navigate("SignUp");
   }
 
-  function handleSingIn({ email, password }: FormDataProps) {
-    signIn(email, password);
+  async function handleSingIn({ email, password }: FormDataProps) {
+
+    try {
+      setIsLoading(true);
+      await signIn(email, password);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title=isAppError?error.message:'Náo foi possivel entrar, tente mais tarde'
+      setIsLoading(false);
+      toast.show({
+        title,
+       placement:'top',
+       bgColor:"red.500"
+      })
+    
+      
+    }finally{
+      setIsLoading(false);
+    }
+   
     
   }
 
@@ -107,7 +129,7 @@ export function SignIn() {
               />
             )}
           />
-          <Button title="Acessar" onPress={handleSubmit(handleSingIn)} />
+          <Button title="Acessar" onPress={handleSubmit(handleSingIn)} isLoading={isLoading}/>
         </Center>
         <Center mt={24}>
           <Text color={"gray.100"} fontSize={"sm"} mb={3} fontFamily={"body"}>
