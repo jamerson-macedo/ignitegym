@@ -2,17 +2,18 @@ import { UserDTO } from "@dtos/UserDTO";
 import { api } from "@services/api";
 import { storageUserGet, storageUserRemove, storageUserSave } from "@storage/storageUser";
 import { Children, ReactNode, createContext, useEffect, useState } from "react";
-
+// dados que serão expostos para todo o app
 export type AuthContextDataProps = {
   user: UserDTO;
   signIn: (email: string, password: string) => Promise<void>;
   isLoadingStorageData: boolean;
   signOut:()=>Promise<void>;
 };
-
+// criando o contexto para usar em todo app
 export const AuthContext = createContext<AuthContextDataProps>(
   {} as AuthContextDataProps
 );
+
 type AuthContextProviderProps = {
   children: ReactNode;
 };
