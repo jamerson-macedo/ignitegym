@@ -7,6 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useAuth } from "@hooks/useAuth";
 import { useForm, Controller } from "react-hook-form"; // serve para pegar todos os dados dos inputs
 // formato dos inputs
 type FormDataProps = {
@@ -31,6 +32,7 @@ const singInSchema = yup.object({
 // absolute deixa completo pegando tudo
 // margin vertical de 24 em cima e em baixo
 export function SignIn() {
+  const { signIn } = useAuth();
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const {
     control,
@@ -43,8 +45,10 @@ export function SignIn() {
   function handleNewAccount() {
     navigation.navigate("SignUp");
   }
-  function handleSingIn(data: FormDataProps) {
-    console.log(data.email, data.password);
+
+  function handleSingIn({ email, password }: FormDataProps) {
+    signIn(email, password);
+    
   }
 
   return (
@@ -78,7 +82,6 @@ export function SignIn() {
           <Controller
             name="email"
             control={control}
-          
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="E-mail"
@@ -90,8 +93,8 @@ export function SignIn() {
               />
             )}
           />
-        
-        <Controller
+
+          <Controller
             name="password"
             control={control}
             render={({ field: { value, onChange } }) => (
