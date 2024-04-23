@@ -1,22 +1,18 @@
 import { ExerciseCard } from "@components/ExerciseCard";
 import { Group } from "@components/Group";
 import { HomeHeader } from "@components/HomeHeader";
-import { useNavigation } from "@react-navigation/native";
+import { ExerciseDTO } from "@dtos/ExerciseDTO";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { AppNavigationProps } from "@routes/app.routes";
 import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
 import { VStack, FlatList, HStack, Heading, Text,useToast } from "native-base";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function Home() {
-  const [groupSelected, setGroupSelected] = useState("costas");
+  const [groupSelected, setGroupSelected] = useState("antebraço");
   const [groups, setGroups] = useState<string[]>([]);
-  const [exercises, setExercises] = useState([
-    "Puxada frontal",
-    "Remada curvada",
-    "Remada unilateral",
-    "Levantamento terra",
-  ]);
+  const [exercises, setExercises] = useState<ExerciseDTO[]>([]);
   const toast=useToast()
 
   const navigation=useNavigation<AppNavigationProps>();
@@ -41,9 +37,32 @@ export function Home() {
       
     }
   }
+  async function fetchExercisesByGroup(){
+    try {
+      const response= await api.get(`/exercises/bygroup/${groupSelected}`)
+     setExercises(response.data) // inserindo grupos
+      
+    } catch (error) {
+      const isAppErrpr=error instanceof AppError;
+      const title=isAppErrpr?error.message:"não foi possivel carregar os Exercicios"
+      toast.show({
+        title,
+       placement:"top",
+       bgColor: "red.500"
+      
+      })
+      
+    }
+
+  } // carrega sempre uma vez
   useEffect(() =>{
     fetchGroups();
+    
   },[])
+
+  useFocusEffect(useCallback(()=>{
+    fetchExercisesByGroup();
+  },[groupSelected]))
   return (
     <VStack flex={1}>
       <HomeHeader />
@@ -78,8 +97,8 @@ export function Home() {
         _contentContainerStyle={{paddingBottom:20}}// espaco pos final
         showsVerticalScrollIndicator={false}
           data={exercises}
-          keyExtractor={(item) => item}
-          renderItem={({ item }) => (<ExerciseCard onPress={handleOpenExerciseDetails}/>)}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (<ExerciseCard onPress={handleOpenExerciseDetails} data={item}/>)}
         >
 
         </FlatList>
