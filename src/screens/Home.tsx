@@ -1,6 +1,7 @@
 import { ExerciseCard } from "@components/ExerciseCard";
 import { Group } from "@components/Group";
 import { HomeHeader } from "@components/HomeHeader";
+import { Loading } from "@components/Loading";
 import { ExerciseDTO } from "@dtos/ExerciseDTO";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { AppNavigationProps } from "@routes/app.routes";
@@ -13,8 +14,10 @@ export function Home() {
   const [groupSelected, setGroupSelected] = useState("antebraço");
   const [groups, setGroups] = useState<string[]>([]);
   const [exercises, setExercises] = useState<ExerciseDTO[]>([]);
-  const toast=useToast()
+  const [isLoading, setIsLoading] = useState(true)
 
+
+  const toast=useToast()
   const navigation=useNavigation<AppNavigationProps>();
 
   function handleOpenExerciseDetails(){
@@ -22,6 +25,7 @@ export function Home() {
   }
   async function fetchGroups(){
     try {
+    
      const response= await api.get("/groups")
      setGroups(response.data) // inserindo grupos do backend
       
@@ -39,6 +43,7 @@ export function Home() {
   }
   async function fetchExercisesByGroup(){
     try {
+      setIsLoading(true);
       const response= await api.get(`/exercises/bygroup/${groupSelected}`)
      setExercises(response.data) // inserindo grupos
       
@@ -52,6 +57,8 @@ export function Home() {
       
       })
       
+    }finally{
+      setIsLoading(false);
     }
 
   } // carrega sempre uma vez
@@ -83,6 +90,7 @@ export function Home() {
           />
         )}
       />
+      {isLoading? <Loading/> :
       <VStack flex={1} px={8}>
         <HStack justifyContent={"space-between"} mb={5}>
           <Heading color={"gray.200"} fontSize={"md"} fontFamily={"heading"}>
@@ -92,6 +100,7 @@ export function Home() {
             {exercises.length}
           </Text>
         </HStack>
+
         <FlatList
 
         _contentContainerStyle={{paddingBottom:20}}// espaco pos final
@@ -104,6 +113,7 @@ export function Home() {
         </FlatList>
 
       </VStack>
+      }
     </VStack>
   );
 }
