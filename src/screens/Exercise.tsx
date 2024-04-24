@@ -29,6 +29,7 @@ type RouteParams = {
   exerciseId: string;
 };
 export function Exercise() {
+  const [sendingRegister, setSendingRegister]=useState(false)
   const [isLoading, setIsLoading] = useState(true); // se nao colocar um estado as imagen snao aparecem
   const navigation = useNavigation<AppNavigationProps>();
   const route = useRoute();
@@ -39,6 +40,30 @@ export function Exercise() {
   function handleGoBack() {
     navigation.goBack();
   }
+
+  async function handleExerciseHistoryRegister(){
+    try {
+      setSendingRegister(true)
+      await api.post("/history",{exercise_id:exerciseId});
+      toast.show({
+        title:"Parabens! Exercicio registrado no seu historico",
+        placement: "top",
+        bgColor: "green.700",
+      });
+      navigation.navigate("History")
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError? error.message : "não foi possivel registrar o exercicio";
+      toast.show({
+        title,
+        placement: "top",
+        bgColor: "red.500",
+      });
+    } finally {
+      setSendingRegister(false)
+      
+    }
+  }
   async function fetchExerciseDetail() {
     try {
       setIsLoading(true);
@@ -48,7 +73,7 @@ export function Exercise() {
       const isAppErrpr = error instanceof AppError;
       const title = isAppErrpr
         ? error.message
-        : "não foi possivel carregar os detalhes do exercisio";
+        : "não foi possivel carregar os detalhes do exercicio";
       toast.show({
         title,
         placement: "top",
@@ -127,7 +152,7 @@ export function Exercise() {
                   </Text>
                 </HStack>
               </HStack>
-              <Button title="Marcar como Revisado" />
+              <Button title="Marcar como Revisado" isLoading={sendingRegister} onPress={handleExerciseHistoryRegister} />
             </Box>
           </VStack>
         )}
