@@ -1,16 +1,41 @@
 import { HistoryCard } from "@components/HistoryCard";
 import { ScreenHeader } from "@components/ScreenHeader";
-import { Heading, VStack,SectionList, Text, Center } from "native-base";
-import { useState } from "react";
+import { HistoryByDayDTO } from "@dtos/HistoryByDayDTO";
+import { useFocusEffect } from "@react-navigation/native";
+import { api } from "@services/api";
+import { AppError } from "@utils/AppError";
+import { Heading, VStack,SectionList, Text, Center, useToast } from "native-base";
+import { useCallback, useState } from "react";
 
 export function History() {
     // estruturea da sextion list
-  const [exercises, setExercises] = useState([
-    {
-      title: "24.2.2024",
-      data: ["puxada lateral", "puxada frontal"],
-    },
-  ]);
+  const [exercises, setExercises] = useState<HistoryByDayDTO[]>([]);
+  const toast=useToast()
+  const [isLoading,setIsLoading]=useState(true)
+
+  async function fetchHistory(){
+    try {
+      setIsLoading(true)
+      const response= await api.get('/history')
+      setExercises(response.data)
+      console.log(response.data[0])
+      
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError? error.message : "não foi possivel carregar o Historico";
+      toast.show({
+        title,
+        placement: "top",
+        bgColor: "red.500",
+      });
+    } finally {
+      setIsLoading(false)
+     
+    }
+  }
+  useFocusEffect(useCallback(()=>{
+    fetchHistory();
+  },[]))
 
   return (
     <VStack flex={1}>
@@ -23,8 +48,8 @@ export function History() {
         </Text>
       )}
       showsVerticalScrollIndicator={false}
-      keyExtractor={item=>item}
-      renderItem={({item})=>(<HistoryCard />)}
+      keyExtractor={item=>item.id}
+      renderItem={({item})=>(<HistoryCard  data={item}/>)}
       renderSectionHeader={({section})=>(
         <Heading fontFamily={"heading"} color={"gray.200"} fontSize={"md"} mt={10} mb={3}>{section.title}</Heading>
 
