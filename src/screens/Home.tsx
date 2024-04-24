@@ -20,8 +20,8 @@ export function Home() {
   const toast=useToast()
   const navigation=useNavigation<AppNavigationProps>();
 
-  function handleOpenExerciseDetails(){
-    navigation.navigate("Exercise");
+  function handleOpenExerciseDetails(exerciseId:string){
+    navigation.navigate("Exercise",{exerciseId});
   }
   async function fetchGroups(){
     try {
@@ -107,7 +107,7 @@ export function Home() {
         showsVerticalScrollIndicator={false}
           data={exercises}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (<ExerciseCard onPress={handleOpenExerciseDetails} data={item}/>)}
+          renderItem={({ item }) => (<ExerciseCard onPress={()=>handleOpenExerciseDetails(item.id)} data={item}/>)}
         >
 
         </FlatList>

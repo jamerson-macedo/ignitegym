@@ -14,7 +14,7 @@ import ProfileSvg from "@assets/profile.svg";
 import { Platform } from "react-native";
 
 type AppRoutes = {
-  Exercise: undefined;
+  Exercise: {exerciseId: string};
   History: undefined;
   Home: undefined;
   Profile: undefined;
