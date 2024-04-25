@@ -13,15 +13,34 @@ import {
 import { useState } from "react";
 import { TouchableOpacity } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from 'expo-file-system';
+import { Controller, useForm } from "react-hook-form";
+import { useAuth } from "@hooks/useAuth";
 
 
+type FormData={
+  email:string,
+  name: string;
+  password: string;
+  old_password: string;
+  confirm_password: string;
+}
 export function Profile() {
   const PHOTO_SIZE = 33;
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState(
     "https:github.com/jamerson-macedo.png"
   );
+  const { user } = useAuth();
+  
+  const { control } = useForm<FormData>({
+      defaultValues: {
+        name: user.name,
+        email: user.email,
+    
+      
+       
+      },
+  });
   async function handleUserPhotoSelect() {
     setPhotoIsLoading(true);
     try {
@@ -31,24 +50,18 @@ export function Profile() {
         aspect: [4, 4],
         quality: 1,
       });
-      if(photoSelected.canceled){
+      if (photoSelected.canceled) {
         return;
       }
-    
-      
-      if( photoSelected.assets[0].uri){
-        setUserPhoto(photoSelected.assets[0].uri)
-      
+
+      if (photoSelected.assets[0].uri) {
+        setUserPhoto(photoSelected.assets[0].uri);
       }
-     
-     
     } catch (error) {
       console.log(error);
-    }finally{
-      setPhotoIsLoading(false)
+    } finally {
+      setPhotoIsLoading(false);
     }
-
-    
   }
   return (
     <VStack flex={1}>
@@ -81,8 +94,31 @@ export function Profile() {
               Alterar foto
             </Text>
           </TouchableOpacity>
-          <Input placeholder="Nome" bg={"gray.600"} />
-          <Input placeholder="Email" bg={"gray.600"} isDisabled />
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { value, onChange } }) => (
+              <Input
+                placeholder="Nome"
+                bg={"gray.600"}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { value, onChange } }) => (
+              <Input
+                placeholder="E-mail"
+                bg={"gray.600"}
+                onChangeText={onChange}
+                value={value}
+                isDisabled
+              />
+            )}
+          />
         </Center>
         <Center px={10} mt={12} mb={9}>
           <Heading
