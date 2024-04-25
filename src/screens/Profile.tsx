@@ -17,6 +17,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useAuth } from "@hooks/useAuth";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+
 type FormDataProps = {
   name: string;
   email: string;
@@ -28,17 +29,17 @@ type FormDataProps = {
 const profileSchema = yup.object().shape({
   name: yup.string().required("Informe o nome"),
   email: yup.string(),
-  old_password: yup.string(),
   password: yup
     .string()
     .min(6, "A senha deve ter pelo menos 6 dígitos.")
     .nullable()
     .transform((value) => (!!value ? value : null)),
+  old_password: yup.string(),
   confirm_password: yup
     .string()
     .nullable()
     .transform((value) => (!!value ? value : null))
-    .oneOf([yup.ref("password"), null], "A confirmação de senha não confere.") 
+    .oneOf([yup.ref("password"), null], "A confirmação de senha não confere.")
     .when("password", {
       is: (Field: any) => Field,
       then: (schema) =>
@@ -46,11 +47,11 @@ const profileSchema = yup.object().shape({
           .required("Informe a confirmação da senha.")
           .nullable()
           .transform((value) => (!!value ? value : null)),
-    }), // verifica se tem alguma coisa la se n tiver entao ele tbm ;e obrigaorio
+    }) // verifica se tem alguma coisa la se n tiver entao ele tbm ;e obrigaorio
 });
 
 export function Profile() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const PHOTO_SIZE = 33;
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState(
@@ -71,7 +72,11 @@ export function Profile() {
   });
 
   async function handleProfileUpdate(data: FormDataProps) {
-    console.log(data);
+    try {
+      setIsUpdating(true);
+    } catch (error) {
+
+    }
   }
   async function handleUserPhotoSelect() {
     setPhotoIsLoading(true);
