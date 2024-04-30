@@ -9,6 +9,7 @@ import {
   Skeleton,
   Text,
   VStack,
+  useToast,
 } from "native-base";
 import { useState } from "react";
 import { TouchableOpacity } from "react-native";
@@ -17,6 +18,8 @@ import { Controller, useForm } from "react-hook-form";
 import { useAuth } from "@hooks/useAuth";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { api } from "@services/api";
+import { AppError } from "@utils/AppError";
 
 type FormDataProps = {
   name: string;
@@ -28,16 +31,16 @@ type FormDataProps = {
 
 const profileSchema = yup.object().shape({
   name: yup.string().required("Informe o nome"),
-  email: yup.string().required(""),
+  email: yup.string().required(),
   password: yup
     .string()
     .min(6, "A senha deve ter pelo menos 6 dígitos.")
-    .nullable().required("")
+    .nullable().required()
     .transform((value) => (!!value ? value : null)),
   old_password: yup.string().required(""),
   confirm_password: yup
     .string()
-    .nullable().required("")
+    .nullable().required()
     .transform((value) => (!!value ? value : null))
     .oneOf([yup.ref("password")], "A confirmação de senha não confere.")
     .when("password", {
@@ -58,6 +61,7 @@ export function Profile() {
     "https:github.com/jamerson-macedo.png"
   );
   const { user } = useAuth();
+  const toast=useToast()
 
   const {
     control,
@@ -73,11 +77,29 @@ export function Profile() {
 
   async function handleProfileUpdate(data: FormDataProps) {
     try {
+      console.log("cheguei a  qui")
       setIsUpdating(true);
+      await api.put('/users',data)
+      toast.show({
+        title:  "Perfil atualizado com sucesso",
+        placement:'top',
+        bgColor:'green.500'
+      });
     } catch (error) {
+      const isAppError=error instanceof AppError;
+      const title=isAppError? error.message: "Não foi possivel atualizar oa dados"
+      toast.show({
+        title,
+        placement:'top',
+        bgColor:'red.500'
+      });
 
+    }finally{
+      setIsUpdating(false);
     }
   }
+
+
   async function handleUserPhotoSelect() {
     setPhotoIsLoading(true);
     try {
@@ -218,6 +240,7 @@ export function Profile() {
             title="Atualizar"
             mt={4}
             onPress={handleSubmit(handleProfileUpdate)}
+            isLoading={isUpdating}
           />
         </Center>
       </ScrollView>
