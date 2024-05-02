@@ -35,12 +35,14 @@ const profileSchema = yup.object().shape({
   password: yup
     .string()
     .min(6, "A senha deve ter pelo menos 6 dígitos.")
-    .nullable().required()
+    .nullable()
+    .required()
     .transform((value) => (!!value ? value : null)),
   old_password: yup.string().required(""),
   confirm_password: yup
     .string()
-    .nullable().required()
+    .nullable()
+    .required()
     .transform((value) => (!!value ? value : null))
     .oneOf([yup.ref("password")], "A confirmação de senha não confere.")
     .when("password", {
@@ -50,7 +52,7 @@ const profileSchema = yup.object().shape({
           .required("Informe a confirmação da senha.")
           .nullable()
           .transform((value) => (!!value ? value : null)),
-    }) // verifica se tem alguma coisa la se n tiver entao ele tbm ;e obrigaorio
+    }), // verifica se tem alguma coisa la se n tiver entao ele tbm ;e obrigaorio
 });
 
 export function Profile() {
@@ -60,8 +62,8 @@ export function Profile() {
   const [userPhoto, setUserPhoto] = useState(
     "https:github.com/jamerson-macedo.png"
   );
-  const { user } = useAuth();
-  const toast=useToast()
+  const { user, updateUserProfile } = useAuth();
+  const toast = useToast();
 
   const {
     control,
@@ -77,28 +79,32 @@ export function Profile() {
 
   async function handleProfileUpdate(data: FormDataProps) {
     try {
-      console.log("cheguei a  qui")
       setIsUpdating(true);
-      await api.put('/users',data)
+      const userUpdated = user;
+      userUpdated.name = data.name;
+
+      await api.put("/users", data);
+
+      await updateUserProfile(userUpdated);
       toast.show({
-        title:  "Perfil atualizado com sucesso",
-        placement:'top',
-        bgColor:'green.500'
+        title: "Perfil atualizado com sucesso",
+        placement: "top",
+        bgColor: "green.500",
       });
     } catch (error) {
-      const isAppError=error instanceof AppError;
-      const title=isAppError? error.message: "Não foi possivel atualizar oa dados"
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : "Não foi possivel atualizar oa dados";
       toast.show({
         title,
-        placement:'top',
-        bgColor:'red.500'
+        placement: "top",
+        bgColor: "red.500",
       });
-
-    }finally{
+    } finally {
       setIsUpdating(false);
     }
   }
-
 
   async function handleUserPhotoSelect() {
     setPhotoIsLoading(true);
