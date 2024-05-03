@@ -94,10 +94,4 @@ $ npm run start
 
 # A aplicação então será exibida de forma 100% funcional diretamente em seu celular.
 
-```
 
-___
-
-Made with ❤️ by André Viapiana 👋🏽 [Get in Touch!](https://www.linkedin.com/in/andreviapiana/)
-
----
