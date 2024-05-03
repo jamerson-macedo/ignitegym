@@ -9,11 +9,12 @@ import { Loading } from "@components/Loading";
 export function Routes() {
   const { colors } = useTheme();
 
-  const { user,isLoadingStorageData } = useAuth();
+  const { user } = useAuth();
+  const isLoadingStorageData=useAuth()
   console.log("usuario logado=>", user);
   const theme = DefaultTheme;
   theme.colors.background = colors.gray[700];
-  if(isLoadingStorageData){
+  if(isLoadingStorageData.isLoadingUserStorageData){
     return <Loading/>
    
   }
