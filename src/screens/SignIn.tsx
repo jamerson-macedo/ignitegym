@@ -36,7 +36,7 @@ const singInSchema = yup.object({
 export function SignIn() {
   const [isLoading,setIsLoading]=useState(false)
   const toast=useToast();
-  const { signIn } = useAuth();
+  const sign = useAuth();
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const {
     control,
@@ -54,7 +54,7 @@ export function SignIn() {
 
     try {
       setIsLoading(true);
-      await signIn(email, password);
+      await sign.singIn(email, password);
     } catch (error) {
       const isAppError = error instanceof AppError;
       const title=isAppError?error.message:'Náo foi possivel entrar, tente mais tarde'

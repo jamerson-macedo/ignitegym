@@ -45,7 +45,7 @@ const singUpSchema = yup.object({
 // margin vertical de 24 em cima e em baixo
 export function SignUp() {
   const [isLoading,setIsLoading]=useState(false)
-  const {signIn}=useAuth()
+  const signIn=useAuth()
   const toast=useToast();
   const {
     control,
@@ -64,7 +64,7 @@ export function SignUp() {
     	try {
         setIsLoading(true)
         await api.post('/users',{name,email,password});
-        await signIn(email,password)
+        await signIn.singIn(email,password)
 
       } catch (error) {
         setIsLoading(false)
